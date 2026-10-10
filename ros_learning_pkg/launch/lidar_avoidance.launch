@@ -1,0 +1,13 @@
+<launch>
+
+  <!-- 沿用 gazebo_agv.launch：啟動 Gazebo、載入 world、放入帶 LiDAR 的 AGV -->
+  <include file="$(find ros_learning_pkg)/launch/gazebo_agv.launch"/>
+
+  <!-- 啟動 LiDAR 基礎避障 Node：訂閱 /scan，發布 /cmd_vel -->
+  <node
+    pkg="ros_learning_pkg"
+    type="lidar_avoidance_node"
+    name="lidar_avoidance"
+    output="screen" />
+
+</launch>

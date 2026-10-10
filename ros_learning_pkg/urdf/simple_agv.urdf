@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+
+<robot name="simple_agv">
+
+  <!-- 車體本體 -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.8 0.5 0.2"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <box size="0.8 0.5 0.2"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="10.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.3"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.5"
+        iyz="0.0"
+        izz="0.6"/>
+    </inertial>
+  </link>
+
+  <!-- 左輪 -->
+  <link name="left_wheel_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <origin rpy="1.5708 0 0"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <origin rpy="1.5708 0 0"/>
+    </collision>
+
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.01"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.01"
+        iyz="0.0"
+        izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- 右輪 -->
+  <link name="right_wheel_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <origin rpy="1.5708 0 0"/>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder radius="0.1" length="0.05"/>
+      </geometry>
+      <origin rpy="1.5708 0 0"/>
+    </collision>
+
+    <inertial>
+      <mass value="1.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.01"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.01"
+        iyz="0.0"
+        izz="0.01"/>
+    </inertial>
+  </link>
+
+  <!-- 左輪與車體連接 -->
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <origin xyz="0 0.275 -0.10"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- 右輪與車體連接 -->
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <origin xyz="0 -0.275 -0.10"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- LiDAR 本體：放在車體上方偏前 -->
+  <link name="laser_link">
+    <visual>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <cylinder radius="0.05" length="0.04"/>
+      </geometry>
+    </collision>
+
+    <!-- 一定要有 inertial，否則 Gazebo 會忽略這個 Link，Sensor 也會跟著消失 -->
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.0001"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.0001"
+        iyz="0.0"
+        izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- LiDAR 與車體固定連接：前方 0.3 m，車體頂面再往上 0.03 m -->
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_link"/>
+    <origin xyz="0.3 0 0.13"/>
+  </joint>
+
+  <!-- 前輔助輪（caster）：只有兩顆驅動輪時車體會前後翻倒，需要前後各一顆支撐 -->
+  <link name="front_caster_link">
+    <visual>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.0001"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.0001"
+        iyz="0.0"
+        izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- 前輔助輪與車體固定連接 -->
+  <!-- z = -0.15：球心在輪軸下方 0.05，球底剛好跟驅動輪底部（-0.20）同高 -->
+  <joint name="front_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster_link"/>
+    <origin xyz="0.3 0 -0.15"/>
+  </joint>
+
+  <!-- 後輔助輪（caster） -->
+  <link name="rear_caster_link">
+    <visual>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.0001"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.0001"
+        iyz="0.0"
+        izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- 後輔助輪與車體固定連接 -->
+  <joint name="rear_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_caster_link"/>
+    <origin xyz="-0.3 0 -0.15"/>
+  </joint>
+   
+  <!-- IMU 本體：放在車體中心頂面 -->
+  <link name="imu_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.02"/>
+      </geometry>
+    </visual>
+
+    <!-- 為了讓 Gazebo 正確處理此 Link，保留 inertial 資訊 -->
+    <inertial>
+      <mass value="0.05"/>
+      <origin xyz="0 0 0"/>
+      <inertia
+        ixx="0.00001"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="0.00001"
+        iyz="0.0"
+        izz="0.00001"/>
+    </inertial>
+  </link>
+
+  <!-- IMU 與車體固定連接：車體中心，頂面再往上 0.01 m -->
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.11"/>
+  </joint>
+
+  <!-- 輔助輪摩擦設為 0：只負責支撐，在地上滑動，不影響差速驅動轉向 -->
+  <gazebo reference="front_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+
+  <gazebo reference="rear_caster_link">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+
+  <!-- Gazebo 差速驅動 Plugin：接收 /cmd_vel，控制左右輪 -->
+  <gazebo>
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+
+      <leftJoint>left_wheel_joint</leftJoint>
+      <rightJoint>right_wheel_joint</rightJoint>
+
+      <wheelSeparation>0.55</wheelSeparation>
+      <wheelDiameter>0.20</wheelDiameter>
+
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+
+      <robotBaseFrame>base_link</robotBaseFrame>
+
+      <publishWheelTF>true</publishWheelTF>
+      <publishOdomTF>true</publishOdomTF>
+
+    </plugin>
+  </gazebo>
+
+  <!-- Gazebo LiDAR Sensor：掃描 360°，發布 sensor_msgs/LaserScan 到 /scan -->
+  <gazebo reference="laser_link">
+    <sensor type="ray" name="lidar_sensor">
+      <pose>0 0 0 0 0 0</pose>
+
+      <!-- true：在 Gazebo 畫面中顯示藍色雷射線 -->
+      <visualize>true</visualize>
+
+      <!-- 每秒掃描 10 次 -->
+      <update_rate>10</update_rate>
+
+      <ray>
+        <scan>
+          <horizontal>
+            <!-- 360 筆，每 1° 一筆：-180° ~ +179° -->
+            <!-- index 180 對應 0°，也就是車子正前方 -->
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle>
+            <max_angle>3.12413936</max_angle>
+          </horizontal>
+        </scan>
+
+        <range>
+          <min>0.12</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+      </ray>
+
+      <plugin name="gazebo_ros_lidar_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/scan</topicName>
+        <frameName>laser_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <!-- Gazebo IMU Sensor：發布 sensor_msgs/Imu 到 /imu/data -->
+  <gazebo reference="imu_link">
+    <sensor type="imu" name="imu_sensor">
+      <always_on>true</always_on>
+
+      <!-- 每秒更新 50 次 -->
+      <update_rate>50</update_rate>
+
+      <plugin name="gazebo_ros_imu_controller" filename="libgazebo_ros_imu_sensor.so">
+        <topicName>/imu/data</topicName>
+        <bodyName>imu_link</bodyName>
+        <frameName>imu_link</frameName>
+        <updateRateHZ>50.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+      </plugin>
+    </sensor>
+  </gazebo>
+</robot>

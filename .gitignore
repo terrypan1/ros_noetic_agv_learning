@@ -1,0 +1,12 @@
+# Catkin 編譯產物
+build/
+devel/
+install/
+logs/
+
+# rosbag
+*.bag
+*.bag.active
+
+# 編輯器
+.vscode/
