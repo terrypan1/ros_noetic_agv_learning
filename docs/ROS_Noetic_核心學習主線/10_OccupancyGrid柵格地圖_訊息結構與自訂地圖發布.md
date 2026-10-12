@@ -586,6 +586,63 @@ Topic：
 
 ---
 
+### Step 7：加上 Axes 確認原點與方向
+
+只看地圖，看不出原點在哪、哪邊是 +X、哪邊是 +Y。
+
+Add：
+
+```text
+Axes
+```
+
+Reference Frame：
+
+```text
+<Fixed Frame>
+→ 也就是 map
+```
+
+Axes 會在 Frame 的原點畫出三根軸：
+
+```text
+紅 → X
+綠 → Y
+藍 → Z
+
+RGB = XYZ
+```
+
+對照本章的地圖：
+
+```text
+origin = (0,0)
+→ 地圖左下角剛好在 Axes 的位置
+
+data[0]、data[1]（黑色）
+→ 從原點沿著紅色 X 軸排出去
+
+y = 1 那一列
+→ 在綠色 Y 軸方向，所以畫在上面
+```
+
+也就是：
+
+```text
+上面（y=1）：白 白 白 白
+下面（y=0）：黑 黑 白 灰
+            ↑
+          原點
+```
+
+所以 `data` 的第 0 列在 RViz 裡是「下面」那一列，不是上面。
+
+這張地圖是手寫的假資料，和 Gazebo 世界無關，不需要旋轉對齊。
+
+後面 TF 章節會用 `TF` Display，等於一次幫每個 Frame 都畫上 Axes。
+
+---
+
 ## 14. 本章最重要的理解
 
 不要把 `/map` 想成一張 PNG 圖片。
@@ -658,6 +715,7 @@ Cartographer
 □ 知道 index = y * width + x
 □ 可以自己發布 /map
 □ RViz 可以顯示自己建立的地圖
+□ 會用 Axes 確認地圖原點與 X / Y 方向
 ```
 
 ---
