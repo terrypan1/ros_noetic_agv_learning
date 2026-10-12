@@ -11,12 +11,12 @@ ROS_04Topic&Message
 ```text
 /speed_publisher
         ↓
-    /agv_speed
+    /robot_speed
         ↓
 /speed_subscriber
 ```
 
-本章沿用 04 的 AGV 速度案例，不另外設計遊戲式範例或無實際工程意義的 Topic 名稱。
+本章沿用 04 的機器人速度案例，不另外設計遊戲式範例或無實際工程意義的 Topic 名稱。
 
 本章分成兩個區塊：
 
@@ -82,7 +82,7 @@ rqt_graph
 Topic：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 Message：
@@ -135,11 +135,11 @@ roslaunch
 最後要能直接看到：
 
 ```text
-Publisher 發布 AGV speed
+Publisher 發布 robot speed
 ↓
-/agv_speed
+/robot_speed
 ↓
-Subscriber 收到 AGV speed
+Subscriber 收到 robot speed
 ```
 
 本章不要提前加入：
@@ -179,7 +179,7 @@ ros_learning_pkg/
 ├── CMakeLists.txt
 ├── package.xml
 ├── launch/
-│   └── agv_speed.launch
+│   └── robot_speed.launch
 └── src/
     ├── learning_node.cpp
     ├── speed_publisher_node.cpp
@@ -188,12 +188,12 @@ ros_learning_pkg/
 
 ---
 
-# 四、建立 agv_speed.launch
+# 四、建立 robot_speed.launch
 
 建立：
 
 ```text
-/root/ros_learning_ws/src/ros_learning_pkg/launch/agv_speed.launch
+/root/ros_learning_ws/src/ros_learning_pkg/launch/robot_speed.launch
 ```
 
 內容：
@@ -201,7 +201,7 @@ ros_learning_pkg/
 ```xml
 <launch>
 
-  <!-- 啟動 AGV 速度 Publisher -->
+  <!-- 啟動機器人速度 Publisher -->
   <!-- type 對應 CMake 建立的 executable；name 是執行後的 ROS Node 名稱。 -->
   <node
     pkg="ros_learning_pkg"
@@ -209,7 +209,7 @@ ros_learning_pkg/
     name="speed_publisher"
     output="screen" />
 
-  <!-- 啟動 AGV 速度 Subscriber -->
+  <!-- 啟動機器人速度 Subscriber -->
   <node
     pkg="ros_learning_pkg"
     type="speed_subscriber_node"
@@ -364,8 +364,8 @@ output="screen"
 因此執行後，可以在同一個 Terminal 直接看到：
 
 ```text
-[Publisher] Publish AGV speed: ...
-[Subscriber] Receive AGV speed: ...
+[Publisher] Publish robot speed: ...
+[Subscriber] Receive robot speed: ...
 ```
 
 本章不要深入 ROS logging 底層。
@@ -423,14 +423,14 @@ output="screen"
 沿用 04 已經存在的：
 
 ```cmake
-## 04 Publisher：發布 AGV 速度到 /agv_speed
+## 04 Publisher：發布機器人速度到 /robot_speed
 add_executable(speed_publisher_node src/speed_publisher_node.cpp)
 
 target_link_libraries(speed_publisher_node
   ${catkin_LIBRARIES}
 )
 
-## 04 Subscriber：訂閱 /agv_speed 並在 Callback 顯示速度
+## 04 Subscriber：訂閱 /robot_speed 並在 Callback 顯示速度
 add_executable(speed_subscriber_node src/speed_subscriber_node.cpp)
 
 target_link_libraries(speed_subscriber_node
@@ -465,7 +465,7 @@ Built target speed_subscriber_node
 ```bash
 source /opt/ros/noetic/setup.bash
 source ~/ros_learning_ws/devel/setup.bash
-roslaunch ros_learning_pkg agv_speed.launch
+roslaunch ros_learning_pkg robot_speed.launch
 ```
 
 這一章正式驗證時，不要求另外先手動啟動：
@@ -488,11 +488,11 @@ roscore
 process[speed_publisher-...]: started
 process[speed_subscriber-...]: started
 
-[Publisher] Publish AGV speed: 0.00 m/s
-[Subscriber] Receive AGV speed: 0.00 m/s
+[Publisher] Publish robot speed: 0.00 m/s
+[Subscriber] Receive robot speed: 0.00 m/s
 
-[Publisher] Publish AGV speed: 0.10 m/s
-[Subscriber] Receive AGV speed: 0.10 m/s
+[Publisher] Publish robot speed: 0.10 m/s
+[Subscriber] Receive robot speed: 0.10 m/s
 ```
 
 不要求 log 排列順序逐字完全相同。
@@ -534,7 +534,7 @@ roslaunch
 ```text
 /speed_publisher
         ↓
-    /agv_speed
+    /robot_speed
         ↓
 /speed_subscriber
 ```
@@ -566,7 +566,7 @@ ROS 系統已經啟動之後
 工程上最常用的檢查工具
 ```
 
-這些指令之後到真實 AGV、Driver、LiDAR、Navigation 系統都會一直用到。
+這些指令之後到真實機器人、Driver、LiDAR、Navigation 系統都會一直用到。
 
 建議把它獨立標成「實戰常用工具」，不要跟 Launch 語法混在一起。
 
@@ -577,7 +577,7 @@ ROS 系統已經啟動之後
 保持：
 
 ```bash
-roslaunch ros_learning_pkg agv_speed.launch
+roslaunch ros_learning_pkg robot_speed.launch
 ```
 
 持續執行。
@@ -620,7 +620,7 @@ rostopic list
 至少應該能找到：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 實戰理解：
@@ -639,7 +639,7 @@ rostopic list
 執行：
 
 ```bash
-rostopic info /agv_speed
+rostopic info /robot_speed
 ```
 
 預期：
@@ -672,7 +672,7 @@ rostopic info
 執行：
 
 ```bash
-rostopic echo /agv_speed
+rostopic echo /robot_speed
 ```
 
 預期看到：
@@ -714,7 +714,7 @@ Ctrl + C
 執行：
 
 ```bash
-rostopic hz /agv_speed
+rostopic hz /robot_speed
 ```
 
 目前 Publisher 使用：
@@ -775,7 +775,7 @@ rqt_graph
 ```text
 /speed_publisher
         |
-        | /agv_speed
+        | /robot_speed
         v
 /speed_subscriber
 ```
@@ -811,10 +811,10 @@ rqt_graph
 cd ~/ros_learning_ws
 ```
 
-開始錄 `/agv_speed`：
+開始錄 `/robot_speed`：
 
 ```bash
-rosbag record -O agv_speed_test.bag /agv_speed
+rosbag record -O robot_speed_test.bag /robot_speed
 ```
 
 讓它錄幾秒後：
@@ -826,19 +826,19 @@ Ctrl + C
 應產生：
 
 ```text
-agv_speed_test.bag
+robot_speed_test.bag
 ```
 
 查看 bag 基本資訊：
 
 ```bash
-rosbag info agv_speed_test.bag
+rosbag info robot_speed_test.bag
 ```
 
 要能看到裡面包含：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 以及 Message 型別：
@@ -937,7 +937,7 @@ rosbag record
 
 ```text
 [ ] ros_learning_pkg/launch 已建立
-[ ] agv_speed.launch 已建立
+[ ] robot_speed.launch 已建立
 [ ] launch XML 格式正確
 [ ] pkg 指向 ros_learning_pkg
 [ ] type 使用 speed_publisher_node
@@ -955,12 +955,12 @@ rosbag record
 
 ```text
 [ ] rosnode list 可看到兩個 Node
-[ ] rostopic list 可找到 /agv_speed
-[ ] rostopic info /agv_speed 關係正確
-[ ] rostopic echo /agv_speed 可看到資料
-[ ] rostopic hz /agv_speed 可看到約 1 Hz
-[ ] rqt_graph 可看到 Publisher → /agv_speed → Subscriber
-[ ] rosbag record 可錄下 /agv_speed
+[ ] rostopic list 可找到 /robot_speed
+[ ] rostopic info /robot_speed 關係正確
+[ ] rostopic echo /robot_speed 可看到資料
+[ ] rostopic hz /robot_speed 可看到約 1 Hz
+[ ] rqt_graph 可看到 Publisher → /robot_speed → Subscriber
+[ ] rosbag record 可錄下 /robot_speed
 [ ] rosbag info 可確認 bag 內容
 ```
 

@@ -1,24 +1,24 @@
 <launch>
 
-  <!-- 啟動 Gazebo，並載入我們自己的 world -->
+  <!-- 啟動 Gazebo，並載入自製的小屋場景 -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name"
-         value="$(find ros_learning_pkg)/worlds/simple_agv.world"/>
+         value="$(find ros_learning_pkg)/worlds/simple_house.world"/>
   </include>
 
   <!-- 把 URDF 內容放進 ROS Parameter Server -->
   <param name="robot_description"
-         textfile="$(find ros_learning_pkg)/urdf/simple_agv.urdf"/>
+         textfile="$(find ros_learning_pkg)/urdf/simple_robot.urdf"/>
 
   <!-- 根據 robot_description 發布機器人各 Link 的 TF -->
   <node pkg="robot_state_publisher"
         type="robot_state_publisher"
         name="robot_state_publisher"/>
 
-  <!-- 把 URDF 機器人放進 Gazebo -->
+  <!-- 把 URDF 機器人放進 Gazebo：屋子正中央的空地 -->
   <node pkg="gazebo_ros"
         type="spawn_model"
-        name="spawn_simple_agv"
-        args="-urdf -param robot_description -model simple_agv -x 0 -y 0 -z 0.2"/>
+        name="spawn_simple_robot"
+        args="-urdf -param robot_description -model simple_robot -x 0 -y 0 -z 0.2"/>
 
 </launch>

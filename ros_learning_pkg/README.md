@@ -2,9 +2,9 @@
 
 這個 Package 目前包含：
 
-- `speed_publisher_node`：發布 AGV 速度到 `/agv_speed`
-- `speed_subscriber_node`：訂閱 `/agv_speed`
-- `agv_speed.launch`：一次啟動 Publisher 與 Subscriber
+- `speed_publisher_node`：發布機器人速度到 `/robot_speed`
+- `speed_subscriber_node`：訂閱 `/robot_speed`
+- `robot_speed.launch`：一次啟動 Publisher 與 Subscriber
 
 ## 目錄結構
 
@@ -16,8 +16,9 @@ ros_learning_pkg/
 ├── include/
 │   └── ros_learning_pkg/               # 標頭檔資料夾（目前是空的）
 ├── launch/
-│   ├── agv_speed.launch                # 一次啟動速度 Publisher 與 Subscriber
-│   ├── gazebo_agv.launch               # 開 Gazebo、載入場景並放入 AGV 模型
+│   ├── robot_speed.launch              # 一次啟動速度 Publisher 與 Subscriber
+│   ├── gazebo_house.launch             # 開 Gazebo、載入自製小屋場景並放入機器人模型
+│   ├── gazebo_robot.launch             # 開 Gazebo、載入場景並放入機器人模型
 │   └── lidar_avoidance.launch          # Gazebo + LiDAR 基礎避障 Node 一次啟動
 ├── src/
 │   ├── cmd_vel_publisher_node.cpp      # 以 10 Hz 發布 /cmd_vel（前進 0.10 m/s，不轉彎）
@@ -26,12 +27,13 @@ ros_learning_pkg/
 │   ├── lidar_avoidance_node.cpp        # 訂閱 /scan，車道內 < 1.0 m 轉向、> 1.5 m 才恢復前進（發布 /cmd_vel）
 │   ├── lidar_scan_subscriber_node.cpp  # 訂閱 /scan，印出 LaserScan 欄位與正前方距離
 │   ├── map_publisher_node.cpp          # 以 1 Hz 發布 /map（nav_msgs/OccupancyGrid，4×2 自訂地圖）
-│   ├── speed_publisher_node.cpp        # 發布 AGV 速度到 /agv_speed
-│   └── speed_subscriber_node.cpp       # 訂閱 /agv_speed 並顯示收到的速度
+│   ├── speed_publisher_node.cpp        # 發布機器人速度到 /robot_speed
+│   └── speed_subscriber_node.cpp       # 訂閱 /robot_speed 並顯示收到的速度
 ├── urdf/
-│   └── simple_agv.urdf                 # AGV 模型：車體 + 左右兩輪 + LiDAR（發布 /scan），差速驅動 Plugin 接收 /cmd_vel
+│   └── simple_robot.urdf               # 機器人模型：車體 + 左右兩輪 + LiDAR（發布 /scan），差速驅動 Plugin 接收 /cmd_vel
 └── worlds/
-    └── simple_agv.world                # Gazebo 場景：地面、光源、前方 2 m 一個方塊障礙物
+    ├── simple_house.world              # Gazebo 場景：自製 8 m × 6 m 多房間小屋（牆與家具都是靜態方塊）
+    └── simple_robot.world              # Gazebo 場景：地面、光源、前方 2 m 一個方塊障礙物
 ```
 
 ## 最快啟動方式
@@ -42,10 +44,10 @@ ros_learning_pkg/
 cd ~/ros_learning_ws
 source /opt/ros/noetic/setup.bash
 source devel/setup.bash
-roslaunch ros_learning_pkg agv_speed.launch
+roslaunch ros_learning_pkg robot_speed.launch
 ```
 
-執行後，同一個 Terminal 會持續顯示 Publisher 發布和 Subscriber 收到的 AGV 速度。
+執行後，同一個 Terminal 會持續顯示 Publisher 發布和 Subscriber 收到的機器人速度。
 
 停止程式：
 
@@ -64,7 +66,7 @@ cd ~/ros_learning_ws
 source /opt/ros/noetic/setup.bash
 catkin_make
 source devel/setup.bash
-roslaunch ros_learning_pkg agv_speed.launch
+roslaunch ros_learning_pkg robot_speed.launch
 ```
 
 只修改 `.launch` 檔通常不需要重新執行 `catkin_make`。
@@ -95,13 +97,13 @@ rosnode list
 查看 Topic 的 Publisher 與 Subscriber：
 
 ```bash
-rostopic info /agv_speed
+rostopic info /robot_speed
 ```
 
 查看 Topic 傳送的即時資料：
 
 ```bash
-rostopic echo /agv_speed
+rostopic echo /robot_speed
 ```
 
 查看通訊關係圖：

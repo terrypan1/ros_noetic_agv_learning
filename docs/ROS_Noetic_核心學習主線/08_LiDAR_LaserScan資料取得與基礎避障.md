@@ -31,17 +31,17 @@ ros_learning_pkg/
 ├── include/
 │   └── ros_learning_pkg/
 ├── launch/
-│   ├── agv_speed.launch
-│   └── gazebo_agv.launch
+│   ├── robot_speed.launch
+│   └── gazebo_robot.launch
 ├── src/
 │   ├── cmd_vel_publisher_node.cpp
 │   ├── learning_node.cpp
 │   ├── speed_publisher_node.cpp
 │   └── speed_subscriber_node.cpp
 ├── urdf/
-│   └── simple_agv.urdf
+│   └── simple_robot.urdf
 └── worlds/
-    └── simple_agv.world
+    └── simple_robot.world
 ```
 
 WSL 實際 Workspace：
@@ -372,7 +372,7 @@ float fMidDist = msg.ranges[nMid];
 
 # 7. 本章第一個實作：讓 Gazebo 小車產生 /scan
 
-目前 `simple_agv` 已經可以在 Gazebo 裡移動。
+目前 `simple_robot` 已經可以在 Gazebo 裡移動。
 
 本章要在現有模型上增加：
 
@@ -387,7 +387,7 @@ Gazebo LiDAR Sensor
 預期資料流：
 
 ```text
-simple_agv.urdf
+simple_robot.urdf
 ↓
 加入 laser_link
 ↓
@@ -409,7 +409,7 @@ Gazebo 模擬雷射掃描
 啟動 Gazebo：
 
 ```bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 確認 Topic：
@@ -909,7 +909,7 @@ Costmap
 目前：
 
 ```text
-worlds/simple_agv.world
+worlds/simple_robot.world
 ```
 
 已經有固定障礙物：
@@ -949,8 +949,8 @@ Callback 收到數值
 ```text
 ros_learning_pkg/
 ├── launch/
-│   ├── agv_speed.launch
-│   ├── gazebo_agv.launch
+│   ├── robot_speed.launch
+│   ├── gazebo_robot.launch
 │   └── lidar_avoidance.launch
 ├── src/
 │   ├── cmd_vel_publisher_node.cpp
@@ -960,9 +960,9 @@ ros_learning_pkg/
 │   ├── lidar_scan_subscriber_node.cpp
 │   └── lidar_avoidance_node.cpp
 ├── urdf/
-│   └── simple_agv.urdf
+│   └── simple_robot.urdf
 └── worlds/
-    └── simple_agv.world
+    └── simple_robot.world
 ```
 
 不建立新的 `lidar_pkg`。
@@ -1034,7 +1034,7 @@ Terminal 2：
 ```bash
 source /opt/ros/noetic/setup.bash
 source ~/ros_learning_ws/devel/setup.bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 Terminal 3：
@@ -1196,7 +1196,7 @@ Twist
 ↓
 /cmd_vel
 ↓
-Gazebo AGV 避開 Box
+Gazebo 機器人避開 Box
 ```
 
 ---

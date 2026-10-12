@@ -134,21 +134,21 @@ target_link_libraries(learning_node
   ${catkin_LIBRARIES}
 )
 
-## 04 Publisher：發布 AGV 速度到 /agv_speed
+## 04 Publisher：發布機器人速度到 /robot_speed
 add_executable(speed_publisher_node src/speed_publisher_node.cpp)
 
 target_link_libraries(speed_publisher_node
   ${catkin_LIBRARIES}
 )
 
-## 04 Subscriber：訂閱 /agv_speed 並在 Callback 顯示速度
+## 04 Subscriber：訂閱 /robot_speed 並在 Callback 顯示速度
 add_executable(speed_subscriber_node src/speed_subscriber_node.cpp)
 
 target_link_libraries(speed_subscriber_node
   ${catkin_LIBRARIES}
 )
 
-## 06 cmd_vel Publisher：發布 geometry_msgs/Twist 控制 Gazebo AGV
+## 06 cmd_vel Publisher：發布 geometry_msgs/Twist 控制 Gazebo 機器人
 add_executable(cmd_vel_publisher_node src/cmd_vel_publisher_node.cpp)
 
 target_link_libraries(cmd_vel_publisher_node

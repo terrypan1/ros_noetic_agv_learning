@@ -32,7 +32,7 @@ Gazebo + /cmd_vel
 
 本章不直接使用現成的完整模擬 Package。
 
-目標是自己從零建立一台最小 AGV，真正理解：
+目標是自己從零建立一台最小機器人，真正理解：
 
 ```text
 World
@@ -45,7 +45,7 @@ Gazebo Plugin
 ↓
 /cmd_vel
 ↓
-AGV 移動
+機器人移動
 ```
 
 ---
@@ -67,7 +67,7 @@ left_wheel_joint / right_wheel_joint
 ↓
 左右輪轉動
 ↓
-AGV 在 Gazebo 中移動
+機器人在 Gazebo 中移動
 ```
 
 最重要的觀念：
@@ -122,7 +122,7 @@ gazebo
 如果要載入自己建立的世界：
 
 ```bash
-gazebo ~/ros_learning_ws/src/ros_learning_pkg/worlds/simple_agv.world
+gazebo ~/ros_learning_ws/src/ros_learning_pkg/worlds/simple_robot.world
 ```
 
 ---
@@ -148,7 +148,7 @@ Gazebo 的模擬場景
 目前建立：
 
 ```text
-~/ros_learning_ws/src/ros_learning_pkg/worlds/simple_agv.world
+~/ros_learning_ws/src/ros_learning_pkg/worlds/simple_robot.world
 ```
 
 目前最小內容包含：
@@ -184,11 +184,11 @@ Robot
 例如目前：
 
 ```text
-simple_agv.world
+simple_robot.world
 → 地板、光源、方塊障礙物
 
-simple_agv.urdf
-→ AGV 車體與輪子
+simple_robot.urdf
+→ 機器人車體與輪子
 ```
 
 ---
@@ -210,7 +210,7 @@ Unified Robot Description Format
 目前檔案：
 
 ```text
-~/ros_learning_ws/src/ros_learning_pkg/urdf/simple_agv.urdf
+~/ros_learning_ws/src/ros_learning_pkg/urdf/simple_robot.urdf
 ```
 
 URDF 主要描述：
@@ -239,7 +239,7 @@ Xacro 留到後面的 URDF / Xacro 專章再深入。
 一個機器人零件 / 剛體
 ```
 
-目前最小 AGV：
+目前最小機器人：
 
 ```text
 base_link
@@ -255,7 +255,7 @@ right_wheel_link
 所以目前模型可先看成：
 
 ```text
-simple_agv
+simple_robot
 ├── base_link
 ├── left_wheel_link
 └── right_wheel_link
@@ -265,12 +265,12 @@ simple_agv
 
 # 八、base_link 是什麼
 
-`base_link` 是目前這台 AGV 的主車體 Link。
+`base_link` 是目前這台機器人的主車體 Link。
 
 可以先理解成：
 
 ```text
-AGV 本體
+機器人本體
 +
 機器人的主要參考座標
 ```
@@ -375,12 +375,12 @@ ros_learning_pkg/
 ├── README.md
 ├── include/
 ├── launch/
-│   ├── agv_speed.launch
-│   └── gazebo_agv.launch
+│   ├── robot_speed.launch
+│   └── gazebo_robot.launch
 ├── worlds/
-│   └── simple_agv.world
+│   └── simple_robot.world
 ├── urdf/
-│   └── simple_agv.urdf
+│   └── simple_robot.urdf
 └── src/
     ├── learning_node.cpp
     ├── speed_publisher_node.cpp
@@ -397,7 +397,7 @@ ros_learning_pkg/
 建立：
 
 ```text
-~/ros_learning_ws/src/ros_learning_pkg/launch/gazebo_agv.launch
+~/ros_learning_ws/src/ros_learning_pkg/launch/gazebo_robot.launch
 ```
 
 目前 Launch 主要負責：
@@ -405,15 +405,15 @@ ros_learning_pkg/
 ```text
 啟動 Gazebo
 ↓
-載入 simple_agv.world
+載入 simple_robot.world
 ↓
-把 simple_agv.urdf 放進 robot_description
+把 simple_robot.urdf 放進 robot_description
 ↓
 啟動 robot_state_publisher
 ↓
 使用 spawn_model
 ↓
-把 simple_agv 放進 Gazebo
+把 simple_robot 放進 Gazebo
 ```
 
 目前 Launch：
@@ -424,12 +424,12 @@ ros_learning_pkg/
   <!-- 啟動 Gazebo，並載入我們自己的 world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name"
-         value="$(find ros_learning_pkg)/worlds/simple_agv.world"/>
+         value="$(find ros_learning_pkg)/worlds/simple_robot.world"/>
   </include>
 
   <!-- 把 URDF 內容放進 ROS Parameter Server -->
   <param name="robot_description"
-         textfile="$(find ros_learning_pkg)/urdf/simple_agv.urdf"/>
+         textfile="$(find ros_learning_pkg)/urdf/simple_robot.urdf"/>
 
   <!-- 根據 robot_description 發布機器人各 Link 的 TF -->
   <node pkg="robot_state_publisher"
@@ -439,8 +439,8 @@ ros_learning_pkg/
   <!-- 把 URDF 機器人放進 Gazebo -->
   <node pkg="gazebo_ros"
         type="spawn_model"
-        name="spawn_simple_agv"
-        args="-urdf -param robot_description -model simple_agv -x 0 -y 0 -z 0.2"/>
+        name="spawn_simple_robot"
+        args="-urdf -param robot_description -model simple_robot -x 0 -y 0 -z 0.2"/>
 
 </launch>
 ```
@@ -448,7 +448,7 @@ ros_learning_pkg/
 注意：
 
 ```text
-gazebo_agv.launch
+gazebo_robot.launch
 目前不要自動啟動 cmd_vel_publisher_node
 ```
 
@@ -481,10 +481,10 @@ Subscribe /cmd_vel
 控制 left_wheel_joint
 控制 right_wheel_joint
 ↓
-AGV 移動
+機器人移動
 ```
 
-目前在 `simple_agv.urdf` 的 `</robot>` 前加入：
+目前在 `simple_robot.urdf` 的 `</robot>` 前加入：
 
 ```xml
   <!-- Gazebo 差速驅動 Plugin：接收 /cmd_vel，控制左右輪 -->
@@ -555,7 +555,7 @@ angular
 └── z
 ```
 
-對目前差速 AGV，先只使用：
+對目前差速機器人，先只使用：
 
 ```text
 linear.x
@@ -672,7 +672,7 @@ rosrun ros_learning_pkg cmd_vel_publisher_node
 ```bash
 source /opt/ros/noetic/setup.bash
 source ~/ros_learning_ws/devel/setup.bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 再啟動：
@@ -712,11 +712,11 @@ Gazebo
 
 資料流已成立。
 
-而且 Gazebo 中的 AGV 已經實際向前移動並撞到方塊障礙物。
+而且 Gazebo 中的機器人已經實際向前移動並撞到方塊障礙物。
 
 ---
 
-# 十八、rqt_robot_steering：GUI 手動控制 AGV
+# 十八、rqt_robot_steering：GUI 手動控制機器人
 
 如果不想每次自己打 `rostopic pub`，可以使用：
 
@@ -727,7 +727,7 @@ rqt_robot_steering
 它可以理解成：
 
 ```text
-目前模擬 AGV 的 GUI 遙控器
+目前模擬機器人的 GUI 遙控器
 ```
 
 它本身會成為 `/cmd_vel` 的 Publisher。
@@ -743,7 +743,7 @@ geometry_msgs/Twist
 ↓
 Gazebo
 ↓
-AGV
+機器人
 ```
 
 ---
@@ -888,12 +888,12 @@ source /opt/ros/noetic/setup.bash
 roscore
 ```
 
-## Terminal 2：Gazebo + AGV
+## Terminal 2：Gazebo + 機器人
 
 ```bash
 source /opt/ros/noetic/setup.bash
 source ~/ros_learning_ws/devel/setup.bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 ## Terminal 3：GUI 遙控器
@@ -919,7 +919,7 @@ rqt_robot_steering
 ↓
 Gazebo
 ↓
-AGV
+機器人
 ```
 
 ---
@@ -1044,7 +1044,7 @@ Gazebo Plugin
 
 ---
 
-# 二十八、目前與真實 AGV 的對照
+# 二十八、目前與真實機器人的對照
 
 Gazebo：
 
@@ -1057,10 +1057,10 @@ Gazebo Differential Drive Plugin
 ↓
 模擬左右輪
 ↓
-模擬 AGV
+模擬機器人
 ```
 
-真實 AGV：
+真實機器人：
 
 ```text
 Navigation / 控制器
@@ -1111,7 +1111,7 @@ Rosbag
 ```text
 Gazebo
 +
-最小 AGV
+最小機器人
 +
 /cmd_vel
 +
@@ -1130,18 +1130,18 @@ GUI 手動控制
 
 ```text
 [x] 自己建立 worlds/
-[x] 自己建立 simple_agv.world
+[x] 自己建立 simple_robot.world
 [x] World 中加入地板與障礙物
 [x] 知道 World 是模擬環境
 [x] 自己建立 urdf/
-[x] 自己建立 simple_agv.urdf
+[x] 自己建立 simple_robot.urdf
 [x] 知道 URDF 是機器人描述格式
 [x] 知道 Link 是零件 / 剛體
 [x] 知道 Joint 是 Link 的連接規則
 [x] 知道 Axis 是旋轉軸
 [x] 知道 base_link 是主車體 Link
-[x] 自己建立 gazebo_agv.launch
-[x] Gazebo 可以載入 simple_agv
+[x] 自己建立 gazebo_robot.launch
+[x] Gazebo 可以載入 simple_robot
 [x] 建立 Differential Drive Plugin
 [x] Plugin 訂閱 /cmd_vel
 [x] cmd_vel_publisher_node 可以發布 Twist
@@ -1150,10 +1150,10 @@ GUI 手動控制
 [x] angular.z 可以控制左右旋轉
 [x] rostopic info /cmd_vel 可看 Publisher / Subscriber
 [x] Gazebo 已實際成為 /cmd_vel Subscriber
-[x] AGV 已實際在 Gazebo 中移動
+[x] 機器人已實際在 Gazebo 中移動
 [x] rqt_robot_steering 已安裝
 [x] 使用 rosrun rqt_robot_steering rqt_robot_steering 成功啟動
-[x] rqt_robot_steering 可以控制 Gazebo AGV
+[x] rqt_robot_steering 可以控制 Gazebo 機器人
 [x] 知道不要同時啟動兩個 /cmd_vel Publisher
 ```
 
@@ -1234,7 +1234,7 @@ Gazebo Differential Drive Plugin
         ↓
 左右輪 Joint
         ↓
-AGV 移動
+機器人移動
 ```
 
 ---

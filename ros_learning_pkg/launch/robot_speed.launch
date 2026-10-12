@@ -1,6 +1,6 @@
 <launch>
 
-  <!-- 啟動 AGV 速度 Publisher -->
+  <!-- 啟動機器人速度 Publisher -->
   <!-- type 對應 CMake 建立的 executable；name 是執行後的 ROS Node 名稱。 -->
   <node
     pkg="ros_learning_pkg"
@@ -8,7 +8,7 @@
     name="speed_publisher"
     output="screen" />
 
-  <!-- 啟動 AGV 速度 Subscriber -->
+  <!-- 啟動機器人速度 Subscriber -->
   <node
     pkg="ros_learning_pkg"
     type="speed_subscriber_node"

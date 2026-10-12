@@ -13,7 +13,7 @@
 ```text
 Gazebo World
 ↓
-simple_agv URDF
+simple_robot URDF
 ↓
 Gazebo differential drive plugin
 ↓
@@ -21,7 +21,7 @@ Gazebo differential drive plugin
 ↓
 rqt_robot_steering
 ↓
-Gazebo AGV 可以前進 / 後退 / 左轉 / 右轉
+Gazebo 機器人可以前進 / 後退 / 左轉 / 右轉
 ```
 
 本章開始進入 RViz。
@@ -55,7 +55,7 @@ Fixed Frame 為什麼會影響畫面？
 ## 1. 模型資料
 
 ```text
-simple_agv.urdf
+simple_robot.urdf
 ↓
 /robot_description
 ↓
@@ -143,7 +143,7 @@ Gazebo 目前負責：
 輪子運動
 ```
 
-例如現在的 `simple_agv`：
+例如現在的 `simple_robot`：
 
 ```text
 rqt_robot_steering
@@ -154,7 +154,7 @@ Gazebo differential drive plugin
 ↓
 左右輪
 ↓
-Gazebo 裡的 AGV 移動
+Gazebo 裡的機器人移動
 ```
 
 ## RViz
@@ -188,7 +188,7 @@ RViz
 目前使用：
 
 ```text
-~/ros_learning_ws/src/ros_learning_pkg/launch/gazebo_agv.launch
+~/ros_learning_ws/src/ros_learning_pkg/launch/gazebo_robot.launch
 ```
 
 內容：
@@ -199,12 +199,12 @@ RViz
   <!-- 啟動 Gazebo，並載入我們自己的 world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name"
-         value="$(find ros_learning_pkg)/worlds/simple_agv.world"/>
+         value="$(find ros_learning_pkg)/worlds/simple_robot.world"/>
   </include>
 
   <!-- 把 URDF 內容放進 ROS Parameter Server -->
   <param name="robot_description"
-         textfile="$(find ros_learning_pkg)/urdf/simple_agv.urdf"/>
+         textfile="$(find ros_learning_pkg)/urdf/simple_robot.urdf"/>
 
   <!-- 根據 robot_description 發布機器人各 Link 的 TF -->
   <node pkg="robot_state_publisher"
@@ -214,8 +214,8 @@ RViz
   <!-- 把 URDF 機器人放進 Gazebo -->
   <node pkg="gazebo_ros"
         type="spawn_model"
-        name="spawn_simple_agv"
-        args="-urdf -param robot_description -model simple_agv -x 0 -y 0 -z 0.2"/>
+        name="spawn_simple_robot"
+        args="-urdf -param robot_description -model simple_robot -x 0 -y 0 -z 0.2"/>
 
 </launch>
 ```
@@ -230,13 +230,13 @@ Launch 裡有：
 
 ```xml
 <param name="robot_description"
-       textfile="$(find ros_learning_pkg)/urdf/simple_agv.urdf"/>
+       textfile="$(find ros_learning_pkg)/urdf/simple_robot.urdf"/>
 ```
 
 代表：
 
 ```text
-simple_agv.urdf
+simple_robot.urdf
 ↓
 讀取 URDF 內容
 ↓
@@ -267,7 +267,7 @@ Gazebo differential drive plugin
 因此可以確認：
 
 ```text
-simple_agv.urdf
+simple_robot.urdf
 ↓
 /robot_description
 ```
@@ -398,7 +398,7 @@ right_wheel_link
 
 ```text
 base_link
-→ AGV 車體主要座標系
+→ 機器人車體主要座標系
 ```
 
 ```text
@@ -546,7 +546,7 @@ rqt_robot_steering
 ↓
 Gazebo
 ↓
-AGV 移動
+機器人移動
 ```
 
 Gazebo 裡確實看到車在動。
@@ -608,7 +608,7 @@ pose.pose.position.y
 這代表：
 
 ```text
-Gazebo AGV 移動
+Gazebo 機器人移動
 ↓
 里程計資料更新
 ↓
@@ -639,7 +639,7 @@ base_link
 rosrun tf tf_echo odom base_link
 ```
 
-控制 AGV 移動時，如果數值持續變化，就代表：
+控制機器人移動時，如果數值持續變化，就代表：
 
 ```text
 odom → base_link
@@ -650,7 +650,7 @@ odom → base_link
 目前核心關係：
 
 ```text
-Gazebo AGV 移動
+Gazebo 機器人移動
 ↓
 /odom 更新
 ↓
@@ -771,7 +771,7 @@ ROS odom
 
 # 十八、Gazebo 裡的障礙物為什麼 RViz 看不到
 
-目前 `simple_agv.world` 裡的箱子是：
+目前 `simple_robot.world` 裡的箱子是：
 
 ```text
 Gazebo World 物件
@@ -822,7 +822,7 @@ roscore
 ```bash
 source /opt/ros/noetic/setup.bash
 source ~/ros_learning_ws/devel/setup.bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 ## Terminal 3：rqt_robot_steering
@@ -861,7 +861,7 @@ rqt_robot_steering
 ↓
 /cmd_vel
 ↓
-Gazebo AGV 移動
+Gazebo 機器人移動
 ↓
 /odom / TF 更新
 ↓
@@ -885,7 +885,7 @@ Gazebo differential drive plugin
         ↓
 左右輪
         ↓
-Gazebo AGV 移動
+Gazebo 機器人移動
 ```
 
 ## 里程計 / TF 線
@@ -903,7 +903,7 @@ odom → base_link TF
 ## 模型線
 
 ```text
-simple_agv.urdf
+simple_robot.urdf
         ↓
 /robot_description
         ↓
@@ -919,7 +919,7 @@ RViz RobotModel
                           ↓
                       Gazebo
                           ↓
-                      AGV 移動
+                      機器人移動
                           ↓
                  /odom + TF 更新
                           ↓
@@ -927,7 +927,7 @@ RViz RobotModel
                           ↑
                   /robot_description
                           ↑
-                   simple_agv.urdf
+                   simple_robot.urdf
 ```
 
 這就是目前 06 → 07 最重要的整體關係。
@@ -1054,7 +1054,7 @@ ROS odom
 [ ] 知道 RViz 與 Gazebo 的差別
 [ ] 可以自行啟動 RViz
 [ ] 知道 Displays / Add / RobotModel 在做什麼
-[ ] 知道 /robot_description 來自 simple_agv.urdf
+[ ] 知道 /robot_description 來自 simple_robot.urdf
 [ ] rosparam get /robot_description 可以看到 URDF
 [ ] 知道 robot_state_publisher 的基本用途
 [ ] rosnode list 可以看到 /robot_state_publisher
@@ -1146,13 +1146,13 @@ rqt_robot_steering
 ↓
 Gazebo
 ↓
-AGV 移動
+機器人移動
 ↓
 /odom + odom→base_link TF
 ↓
 RViz
 
-simple_agv.urdf
+simple_robot.urdf
 ↓
 /robot_description
 ↓

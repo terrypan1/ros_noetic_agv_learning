@@ -13,7 +13,7 @@
 4. 讀取 orientation / angular_velocity / linear_acceleration
 5. 理解 covariance 的基本用途
 6. 將 Quaternion 轉成 Roll / Pitch / Yaw
-7. 用目前 Gazebo 的 simple_agv 做實際驗證
+7. 用目前 Gazebo 的 simple_robot 做實際驗證
 ```
 
 沿用既有套件：
@@ -108,7 +108,7 @@ angular_velocity.z
 
 單位通常是 `rad/s`。
 
-對平面 AGV 而言，最常注意：
+對平面機器人而言，最常注意：
 
 ```text
 angular_velocity.z
@@ -240,7 +240,7 @@ src/imu_subscriber_node.cpp
 修改：
 
 ```text
-urdf/simple_agv.urdf
+urdf/simple_robot.urdf
 CMakeLists.txt
 package.xml
 README.md
@@ -248,19 +248,19 @@ README.md
 
 ---
 
-## 11. Gazebo simple_agv 加入 IMU
+## 11. Gazebo simple_robot 加入 IMU
 
 目標：
 
 ```text
-simple_agv
+simple_robot
 ↓
 Gazebo IMU Sensor
 ↓
 /imu/data
 ```
 
-在 `simple_agv.urdf` 加入：
+在 `simple_robot.urdf` 加入：
 
 ```text
 imu_link
@@ -443,7 +443,7 @@ Pitch → 俯仰 → 繞 Y 軸
 Yaw   → 偏航 → 繞 Z 軸
 ```
 
-對目前平面 AGV 最容易觀察的是 `Yaw`。
+對目前平面機器人最容易觀察的是 `Yaw`。
 
 ---
 
@@ -651,7 +651,7 @@ rostopic echo /imu/data
 ## 30. 本章完成條件
 
 ```text
-[ ] simple_agv 已加入 Gazebo IMU Sensor
+[ ] simple_robot 已加入 Gazebo IMU Sensor
 [ ] ROS 可以看到 /imu/data
 [ ] /imu/data Type 是 sensor_msgs/Imu
 [ ] rostopic echo /imu/data 有資料
@@ -674,7 +674,7 @@ rostopic echo /imu/data
 修改：
 
 ```text
-urdf/simple_agv.urdf
+urdf/simple_robot.urdf
 ```
 
 先只驗證：

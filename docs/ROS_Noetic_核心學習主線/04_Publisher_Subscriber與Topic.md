@@ -6,12 +6,12 @@
 
 常見入門範例常使用遊戲式文字與不具實際工程意義的 Topic 名稱，不利於後續理解真正 ROS 專案的資料流。
 
-這次改成一個最小、正常，而且可以直接對應 AGV 系統的案例：
+這次改成一個最小、正常，而且可以直接對應機器人系統的案例：
 
 ```text
 speed_publisher
         ↓
-    /agv_speed
+    /robot_speed
   std_msgs/Float32
         ↓
 speed_subscriber
@@ -99,9 +99,9 @@ speed_publisher
 工作：
 
 ```text
-模擬 AGV 速度
+模擬機器人速度
 ↓
-發布到 /agv_speed
+發布到 /robot_speed
 ```
 
 ---
@@ -111,7 +111,7 @@ speed_publisher
 Topic 名稱：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 Message 型別：
@@ -159,13 +159,13 @@ speed_subscriber
 工作：
 
 ```text
-訂閱 /agv_speed
+訂閱 /robot_speed
 ↓
 收到 std_msgs/Float32
 ↓
 進入 Callback
 ↓
-輸出收到的 AGV 速度
+輸出收到的機器人速度
 ```
 
 ---
@@ -177,7 +177,7 @@ speed_publisher
       |
       | publish
       v
-  /agv_speed
+  /robot_speed
 std_msgs/Float32
       |
       | subscribe
@@ -198,10 +198,10 @@ speedCallback()
 
 ```text
 speed_publisher
-→ 發布到 /agv_speed
+→ 發布到 /robot_speed
 
 speed_subscriber
-→ 訂閱 /agv_speed
+→ 訂閱 /robot_speed
 
 ROS
 → 根據 Topic 把 Publisher 與 Subscriber 接起來
@@ -227,15 +227,15 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     // 建立 Publisher
-    // 發布 Topic：/agv_speed
+    // 發布 Topic：/robot_speed
     // Message 型別：std_msgs/Float32
     // Queue Size：10
-    ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/agv_speed", 10);
+    ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/robot_speed", 10);
 
     // 每秒發布一次資料
     ros::Rate loop_rate(1);
 
-    // 模擬 AGV 速度
+    // 模擬機器人速度
     std::vector<float> speeds = {
         0.00f,
         0.10f,
@@ -253,10 +253,10 @@ int main(int argc, char **argv)
         std_msgs::Float32 msg;
         msg.data = speeds[index];
 
-        // 將速度資料發布到 /agv_speed
+        // 將速度資料發布到 /robot_speed
         speed_pub.publish(msg);
 
-        ROS_INFO("[Publisher] Publish AGV speed: %.2f m/s", msg.data);
+        ROS_INFO("[Publisher] Publish robot speed: %.2f m/s", msg.data);
 
         index++;
 
@@ -280,10 +280,10 @@ int main(int argc, char **argv)
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
 
-// 當 /agv_speed 有新資料進來時，ROS 會呼叫這個 Callback
+// 當 /robot_speed 有新資料進來時，ROS 會呼叫這個 Callback
 void speedCallback(const std_msgs::Float32::ConstPtr &msg)
 {
-    ROS_INFO("[Subscriber] Receive AGV speed: %.2f m/s", msg->data);
+    ROS_INFO("[Subscriber] Receive robot speed: %.2f m/s", msg->data);
 }
 
 int main(int argc, char **argv)
@@ -294,12 +294,12 @@ int main(int argc, char **argv)
     // 建立 NodeHandle
     ros::NodeHandle nh;
 
-    // 訂閱 /agv_speed
+    // 訂閱 /robot_speed
     // Message 型別會由 Callback 參數決定為 std_msgs/Float32
     // Queue Size：10
-    ros::Subscriber speed_sub = nh.subscribe("/agv_speed", 10, speedCallback);
+    ros::Subscriber speed_sub = nh.subscribe("/robot_speed", 10, speedCallback);
 
-    ROS_INFO("speed_subscriber started, waiting for /agv_speed ...");
+    ROS_INFO("speed_subscriber started, waiting for /robot_speed ...");
 
     // 讓 Node 持續運行並處理 Callback
     ros::spin();
@@ -411,13 +411,13 @@ rosrun ros_learning_pkg speed_publisher_node
 預期會持續看到：
 
 ```text
-[Publisher] Publish AGV speed: 0.00 m/s
-[Publisher] Publish AGV speed: 0.10 m/s
-[Publisher] Publish AGV speed: 0.20 m/s
-[Publisher] Publish AGV speed: 0.30 m/s
-[Publisher] Publish AGV speed: 0.20 m/s
-[Publisher] Publish AGV speed: 0.10 m/s
-[Publisher] Publish AGV speed: 0.00 m/s
+[Publisher] Publish robot speed: 0.00 m/s
+[Publisher] Publish robot speed: 0.10 m/s
+[Publisher] Publish robot speed: 0.20 m/s
+[Publisher] Publish robot speed: 0.30 m/s
+[Publisher] Publish robot speed: 0.20 m/s
+[Publisher] Publish robot speed: 0.10 m/s
+[Publisher] Publish robot speed: 0.00 m/s
 ```
 
 然後重新循環。
@@ -435,13 +435,13 @@ rosrun ros_learning_pkg speed_subscriber_node
 預期會看到：
 
 ```text
-speed_subscriber started, waiting for /agv_speed ...
-[Subscriber] Receive AGV speed: 0.10 m/s
-[Subscriber] Receive AGV speed: 0.20 m/s
-[Subscriber] Receive AGV speed: 0.30 m/s
-[Subscriber] Receive AGV speed: 0.20 m/s
-[Subscriber] Receive AGV speed: 0.10 m/s
-[Subscriber] Receive AGV speed: 0.00 m/s
+speed_subscriber started, waiting for /robot_speed ...
+[Subscriber] Receive robot speed: 0.10 m/s
+[Subscriber] Receive robot speed: 0.20 m/s
+[Subscriber] Receive robot speed: 0.30 m/s
+[Subscriber] Receive robot speed: 0.20 m/s
+[Subscriber] Receive robot speed: 0.10 m/s
+[Subscriber] Receive robot speed: 0.00 m/s
 ```
 
 Publisher 與 Subscriber 兩邊的數值應該可以互相對上。
@@ -450,12 +450,12 @@ Publisher 與 Subscriber 兩邊的數值應該可以互相對上。
 
 ```text
 Publisher
-Publish AGV speed: 0.20 m/s
+Publish robot speed: 0.20 m/s
 
-          ↓ /agv_speed
+          ↓ /robot_speed
 
 Subscriber
-Receive AGV speed: 0.20 m/s
+Receive robot speed: 0.20 m/s
 ```
 
 這就是本章第一次最重要的實際效果。
@@ -475,7 +475,7 @@ speed_publisher
 
         ↓
 
-/agv_speed
+/robot_speed
 
         ↓
 
@@ -509,7 +509,7 @@ Publisher 最核心的程式只有幾個部分。
 ## 9.1 建立 Publisher
 
 ```cpp
-ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/agv_speed", 10);
+ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/robot_speed", 10);
 ```
 
 拆開看：
@@ -527,7 +527,7 @@ nh.advertise
 std_msgs::Float32
 → Topic 使用的 Message 型別
 
-/agv_speed
+/robot_speed
 → Topic 名稱
 
 10
@@ -577,7 +577,7 @@ speed_pub.publish(msg);
 ↓
 發布到 speed_pub 對應的 Topic
 ↓
-/agv_speed
+/robot_speed
 ```
 
 因此：
@@ -625,7 +625,7 @@ loop_rate.sleep();
 目前 Topic：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 Topic 本身不是 Node，也不是一般 C++ 變數。
@@ -642,7 +642,7 @@ ROS 裡一條有名字的資料通道
 
 ```text
 Topic
-/agv_speed
+/robot_speed
 
 Message Type
 std_msgs/Float32
@@ -655,7 +655,7 @@ std_msgs/Float32
 ↓
 包成 std_msgs/Float32
 ↓
-發布到 /agv_speed
+發布到 /robot_speed
 ```
 
 ---
@@ -673,7 +673,7 @@ rostopic list
 應該可以看到：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 ---
@@ -681,7 +681,7 @@ rostopic list
 ## 11.2 查看 Topic 詳細資訊
 
 ```bash
-rostopic info /agv_speed
+rostopic info /robot_speed
 ```
 
 重點看：
@@ -719,7 +719,7 @@ Subscribers:
 ## 11.3 直接看 Topic 裡的資料
 
 ```bash
-rostopic echo /agv_speed
+rostopic echo /robot_speed
 ```
 
 會直接看到類似：
@@ -757,7 +757,7 @@ ros::spin
 ## 12.1 建立 Subscriber
 
 ```cpp
-ros::Subscriber speed_sub = nh.subscribe("/agv_speed", 10, speedCallback);
+ros::Subscriber speed_sub = nh.subscribe("/robot_speed", 10, speedCallback);
 ```
 
 拆開看：
@@ -772,7 +772,7 @@ speed_sub
 nh.subscribe
 → 告訴 ROS：我要訂閱某個 Topic
 
-/agv_speed
+/robot_speed
 → 要訂閱的 Topic
 
 10
@@ -796,7 +796,7 @@ subscribe
 ```cpp
 void speedCallback(const std_msgs::Float32::ConstPtr &msg)
 {
-    ROS_INFO("[Subscriber] Receive AGV speed: %.2f m/s", msg->data);
+    ROS_INFO("[Subscriber] Receive robot speed: %.2f m/s", msg->data);
 }
 ```
 
@@ -805,7 +805,7 @@ void speedCallback(const std_msgs::Float32::ConstPtr &msg)
 而是：
 
 ```text
-/agv_speed 有新 Message
+/robot_speed 有新 Message
 ↓
 ROS 收到事件
 ↓
@@ -842,7 +842,7 @@ ros::spin();
 return 0;
 ```
 
-Node 很快就結束，自然也無法一直等待 `/agv_speed`。
+Node 很快就結束，自然也無法一直等待 `/robot_speed`。
 
 ---
 
@@ -853,19 +853,19 @@ Node 很快就結束，自然也無法一直等待 `/agv_speed`。
 Publisher：
 
 ```cpp
-ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/agv_speed", 10);
+ros::Publisher speed_pub = nh.advertise<std_msgs::Float32>("/robot_speed", 10);
 ```
 
 Subscriber：
 
 ```cpp
-ros::Subscriber speed_sub = nh.subscribe("/agv_speed", 10, speedCallback);
+ros::Subscriber speed_sub = nh.subscribe("/robot_speed", 10, speedCallback);
 ```
 
 兩邊共同的東西是：
 
 ```text
-/agv_speed
+/robot_speed
 ```
 
 因此 ROS 可以知道：
@@ -873,11 +873,11 @@ ros::Subscriber speed_sub = nh.subscribe("/agv_speed", 10, speedCallback);
 ```text
 /speed_publisher
         ↓
-發布 /agv_speed
+發布 /robot_speed
 
 /speed_subscriber
         ↑
-訂閱 /agv_speed
+訂閱 /robot_speed
 ```
 
 最後形成：
@@ -887,7 +887,7 @@ ros::Subscriber speed_sub = nh.subscribe("/agv_speed", 10, speedCallback);
        |
        | std_msgs/Float32
        v
-  /agv_speed
+  /robot_speed
        |
        | std_msgs/Float32
        v
@@ -916,11 +916,11 @@ Publisher / Subscriber 發現彼此
 ```text
 speed_publisher
 → 告訴 ROS Master
-→ 我會發布 /agv_speed
+→ 我會發布 /robot_speed
 
 speed_subscriber
 → 告訴 ROS Master
-→ 我要訂閱 /agv_speed
+→ 我要訂閱 /robot_speed
 
 ROS Master
 → 協助雙方找到彼此
@@ -973,7 +973,7 @@ rqt_graph
 /speed_publisher
         |
         v
-   /agv_speed
+   /robot_speed
         |
         v
 /speed_subscriber
@@ -1050,9 +1050,9 @@ Callback
 
 ---
 
-# 十九、回頭對照真正 AGV 系統
+# 十九、回頭對照真正機器人系統
 
-自己的最小 Publisher / Subscriber 跑通之後，再回頭看真正 ROS AGV 系統。
+自己的最小 Publisher / Subscriber 跑通之後，再回頭看真正 ROS 機器人系統。
 
 例如後續常看到：
 
@@ -1116,9 +1116,9 @@ Publisher
 - [ ] `catkin_make` 成功
 - [ ] `speed_publisher_node` 可以執行
 - [ ] `speed_subscriber_node` 可以執行
-- [ ] Publisher 可以持續發布 `/agv_speed`
-- [ ] Subscriber Callback 可以持續收到 `/agv_speed`
-- [ ] 知道 `/agv_speed` 是 Topic，不是 Node
+- [ ] Publisher 可以持續發布 `/robot_speed`
+- [ ] Subscriber Callback 可以持續收到 `/robot_speed`
+- [ ] 知道 `/robot_speed` 是 Topic，不是 Node
 - [ ] 知道 Message 型別是 `std_msgs/Float32`
 - [ ] 知道 `advertise()` 的用途
 - [ ] 知道 `publish()` 的用途
@@ -1126,16 +1126,16 @@ Publisher
 - [ ] 知道 Callback 為什麼會被執行
 - [ ] 知道 `ros::spin()` 在 Subscriber 的用途
 - [ ] `rosnode list` 能看到兩個 Node
-- [ ] `rostopic list` 能看到 `/agv_speed`
-- [ ] `rostopic info /agv_speed` 能看懂 Publishers / Subscribers
-- [ ] `rostopic echo /agv_speed` 能看到實際資料
+- [ ] `rostopic list` 能看到 `/robot_speed`
+- [ ] `rostopic info /robot_speed` 能看懂 Publishers / Subscribers
+- [ ] `rostopic echo /robot_speed` 能看到實際資料
 - [ ] `rqt_graph` 能看懂完整資料流
 
 ---
 
 # 二十一、本章核心模型
 
-最後要留下的核心不是範例中的 AGV 速度數字，而是這個模型：
+最後要留下的核心不是範例中的機器人速度數字，而是這個模型：
 
 ```text
 Publisher Node

@@ -1,10 +1,10 @@
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
 
-// 每當 /agv_speed 收到新訊息時，ROS 就會呼叫這個 Callback。
+// 每當 /robot_speed 收到新訊息時，ROS 就會呼叫這個 Callback。
 void speedCallback(const std_msgs::Float32::ConstPtr &msg)
 {
-    ROS_INFO("[Subscriber] Receive AGV speed: %.2f m/s", msg->data);
+    ROS_INFO("[Subscriber] Receive robot speed: %.2f m/s", msg->data);
 }
 
 int main(int argc, char **argv)
@@ -13,11 +13,11 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "speed_subscriber");
     ros::NodeHandle nh;
 
-    // 訂閱 /agv_speed，佇列最多保留 10 筆尚未處理的訊息。
+    // 訂閱 /robot_speed，佇列最多保留 10 筆尚未處理的訊息。
     ros::Subscriber speed_sub =
-        nh.subscribe("/agv_speed", 10, speedCallback);
+        nh.subscribe("/robot_speed", 10, speedCallback);
 
-    ROS_INFO("speed_subscriber started, waiting for /agv_speed ...");
+    ROS_INFO("speed_subscriber started, waiting for /robot_speed ...");
 
     // 持續等待 ROS 訊息，收到後執行 Callback。
     ros::spin();

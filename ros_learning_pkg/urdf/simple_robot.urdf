@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot name="simple_agv">
+<robot name="simple_robot">
 
   <!-- 車體本體 -->
   <link name="base_link">

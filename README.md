@@ -1,24 +1,24 @@
-# ROS Noetic AGV 學習與實作
+# ROS Noetic 機器人學習與實作
 
 本專案記錄 ROS Noetic 從基礎通訊、Gazebo 模擬、RViz、LiDAR、IMU，
 一路延伸到 TF、Odometry、SLAM 與 Navigation 的學習與實作過程。
 
 重點不是單純執行既有套件，而是透過自己建立 Node、Topic、Message、
-Gazebo 小車與 Sensor，理解 AGV / AMR 系統中的實際資料流與控制流程。
+Gazebo 小車與 Sensor，理解移動機器人系統中的實際資料流與控制流程。
 
 目前已完成：
 
 - 自己撰寫的 ROS C++ Node（Publisher / Subscriber、`/cmd_vel` 控制、LiDAR 避障、IMU 姿態解析）
-- 自己用 URDF 建立的 Gazebo 差速小車 `simple_agv`
+- 自己用 URDF 建立的 Gazebo 差速小車 `simple_robot`
 - 自己在小車上加入 LiDAR（`/scan`）與 IMU（`/imu/data`）Sensor
 
 後續會延伸到 TF、Odometry、Cartographer 與 Navigation。
 
 ## 畫面預覽
 
-| Gazebo：自己建立的 simple_agv | RViz：RobotModel 與 TF |
+| Gazebo：自己建立的 simple_robot | RViz：RobotModel 與 TF |
 |---|---|
-| ![Gazebo simple_agv](docs/images/gazebo_simple_agv.jpg) | ![RViz RobotModel](docs/images/rviz_robot_model.jpg) |
+| ![Gazebo simple_robot](docs/images/gazebo_simple_robot.jpg) | ![RViz RobotModel](docs/images/rviz_robot_model.jpg) |
 
 ---
 
@@ -58,12 +58,12 @@ Gazebo Diff Drive Plugin
 ↓
 左右輪
 ↓
-AGV 移動
+機器人移動
 ```
 
 ![cmd_vel 速度控制架構](docs/images/cmd_vel_control.jpg)
 
-`/cmd_vel` 使用 `geometry_msgs/Twist`，平面 AGV 主要使用 `linear.x`（前進速度）與 `angular.z`（轉向角速度）：
+`/cmd_vel` 使用 `geometry_msgs/Twist`，平面機器人主要使用 `linear.x`（前進速度）與 `angular.z`（轉向角速度）：
 
 ![Twist 訊息結構](docs/images/twist_message.jpg)
 
@@ -116,11 +116,11 @@ RViz Map
 ## 專案結構
 
 ```text
-ros_noetic_agv_learning/
+ros_noetic_robot_learning/
 ├── ros_learning_pkg/
 │   ├── launch/      # 啟動 Gazebo 與 ROS Node
 │   ├── src/         # C++ Node
-│   ├── urdf/        # simple_agv 與 Sensor 定義
+│   ├── urdf/        # simple_robot 與 Sensor 定義
 │   ├── worlds/      # Gazebo 測試場景
 │   ├── CMakeLists.txt
 │   └── package.xml
@@ -166,7 +166,7 @@ source devel/setup.bash
 ### 啟動 Gazebo
 
 ```bash
-roslaunch ros_learning_pkg gazebo_agv.launch
+roslaunch ros_learning_pkg gazebo_robot.launch
 ```
 
 ### 手動控制
