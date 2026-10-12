@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -107,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ros_learning_pkg
-  CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs std_msgs tf
+  CATKIN_DEPENDS geometry_msgs nav_msgs roscpp sensor_msgs std_msgs tf
 #  DEPENDS system_lib
 )
 
@@ -172,6 +173,13 @@ target_link_libraries(lidar_avoidance_node
 add_executable(imu_subscriber_node src/imu_subscriber_node.cpp)
 
 target_link_libraries(imu_subscriber_node
+  ${catkin_LIBRARIES}
+)
+
+## 10 Map Publisher：發布 /map（nav_msgs/OccupancyGrid）
+add_executable(map_publisher_node src/map_publisher_node.cpp)
+
+target_link_libraries(map_publisher_node
   ${catkin_LIBRARIES}
 )
 

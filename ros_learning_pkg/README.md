@@ -10,7 +10,7 @@
 
 ```text
 ros_learning_pkg/
-├── CMakeLists.txt                      # 編譯設定，建立 6 個 Node 執行檔
+├── CMakeLists.txt                      # 編譯設定，建立 8 個 Node 執行檔
 ├── README.md                           # 本說明文件
 ├── package.xml                         # Package 資訊與相依套件
 ├── include/
@@ -21,9 +21,11 @@ ros_learning_pkg/
 │   └── lidar_avoidance.launch          # Gazebo + LiDAR 基礎避障 Node 一次啟動
 ├── src/
 │   ├── cmd_vel_publisher_node.cpp      # 以 10 Hz 發布 /cmd_vel（前進 0.10 m/s，不轉彎）
+│   ├── imu_subscriber_node.cpp         # 訂閱 /imu/data，Quaternion 轉 Roll / Pitch / Yaw
 │   ├── learning_node.cpp               # 最基本的 Node 範例，啟動後待命
 │   ├── lidar_avoidance_node.cpp        # 訂閱 /scan，車道內 < 1.0 m 轉向、> 1.5 m 才恢復前進（發布 /cmd_vel）
 │   ├── lidar_scan_subscriber_node.cpp  # 訂閱 /scan，印出 LaserScan 欄位與正前方距離
+│   ├── map_publisher_node.cpp          # 以 1 Hz 發布 /map（nav_msgs/OccupancyGrid，4×2 自訂地圖）
 │   ├── speed_publisher_node.cpp        # 發布 AGV 速度到 /agv_speed
 │   └── speed_subscriber_node.cpp       # 訂閱 /agv_speed 並顯示收到的速度
 ├── urdf/

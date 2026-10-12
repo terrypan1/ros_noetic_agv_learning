@@ -36,7 +36,7 @@ Gazebo 小車與 Sensor，理解 AGV / AMR 系統中的實際資料流與控制�
 - [x] 基礎避障
 - [x] IMU / sensor_msgs/Imu
 - [x] Quaternion → Roll / Pitch / Yaw
-- [ ] OccupancyGrid 柵格地圖（筆記整理中，尚未實作）
+- [x] OccupancyGrid 柵格地圖 / 自訂 /map 發布
 - [ ] TF / Frame
 - [ ] Odometry
 - [ ] Cartographer
@@ -101,7 +101,7 @@ Quaternion
 Roll / Pitch / Yaw
 ```
 
-### 地圖（學習中）
+### 地圖
 
 ```text
 nav_msgs/OccupancyGrid
@@ -224,4 +224,4 @@ Gazebo / RViz 驗證
 | 07 | RViz 操作與 ROS 資料視覺化 |
 | 08 | LiDAR LaserScan 資料取得與基礎避障 |
 | 09 | IMU 資料取得與 Quaternion 姿態解析 |
-| 10 | OccupancyGrid 柵格地圖（整理中） |
+| 10 | OccupancyGrid 柵格地圖訊息結構與自訂地圖發布 |
