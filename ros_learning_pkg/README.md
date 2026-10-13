@@ -10,16 +10,22 @@
 
 ```text
 ros_learning_pkg/
-├── CMakeLists.txt                      # 編譯設定，建立 8 個 Node 執行檔
+├── CMakeLists.txt                      # 編譯設定，建立 9 個 Node 執行檔
 ├── README.md                           # 本說明文件
 ├── package.xml                         # Package 資訊與相依套件
+├── config/
+│   └── cartographer_2d.lua             # Cartographer 2D SLAM 設定（/scan + /odom，只發布 map -> odom）
 ├── include/
 │   └── ros_learning_pkg/               # 標頭檔資料夾（目前是空的）
 ├── launch/
 │   ├── robot_speed.launch              # 一次啟動速度 Publisher 與 Subscriber
+│   ├── cartographer_2d.launch          # 啟動 Cartographer 與 Occupancy Grid Node（Cartographer 改收 /odom_filtered）
 │   ├── gazebo_house.launch             # 開 Gazebo、載入自製小屋場景並放入機器人模型
 │   ├── gazebo_robot.launch             # 開 Gazebo、載入場景並放入機器人模型
 │   └── lidar_avoidance.launch          # Gazebo + LiDAR 基礎避障 Node 一次啟動
+├── maps/
+│   ├── simple_house_map.pgm            # map_saver 保存的小屋地圖影像（178 × 139 格，0.05 m / 格）
+│   └── simple_house_map.yaml           # 地圖的解析度、原點與佔據門檻
 ├── src/
 │   ├── cmd_vel_publisher_node.cpp      # 以 10 Hz 發布 /cmd_vel（前進 0.10 m/s，不轉彎）
 │   ├── imu_subscriber_node.cpp         # 訂閱 /imu/data，Quaternion 轉 Roll / Pitch / Yaw
@@ -27,10 +33,11 @@ ros_learning_pkg/
 │   ├── lidar_avoidance_node.cpp        # 訂閱 /scan，車道內 < 1.0 m 轉向、> 1.5 m 才恢復前進（發布 /cmd_vel）
 │   ├── lidar_scan_subscriber_node.cpp  # 訂閱 /scan，印出 LaserScan 欄位與正前方距離
 │   ├── map_publisher_node.cpp          # 以 1 Hz 發布 /map（nav_msgs/OccupancyGrid，4×2 自訂地圖）
+│   ├── odom_timestamp_filter_node.cpp  # 訂閱 /odom，丟掉 timestamp 重複或倒退的訊息，發布 /odom_filtered
 │   ├── speed_publisher_node.cpp        # 發布機器人速度到 /robot_speed
 │   └── speed_subscriber_node.cpp       # 訂閱 /robot_speed 並顯示收到的速度
 ├── urdf/
-│   └── simple_robot.urdf               # 機器人模型：車體 + 左右兩輪 + LiDAR（發布 /scan），差速驅動 Plugin 接收 /cmd_vel
+│   └── simple_robot.urdf               # 機器人模型：車體 + 左右兩輪 + 前後輔助輪 + LiDAR（/scan）+ IMU（/imu/data），差速驅動 Plugin 接收 /cmd_vel、發布 /odom
 └── worlds/
     ├── simple_house.world              # Gazebo 場景：自製 8 m × 6 m 多房間小屋（牆與家具都是靜態方塊）
     └── simple_robot.world              # Gazebo 場景：地面、光源、前方 2 m 一個方塊障礙物
