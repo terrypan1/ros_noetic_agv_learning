@@ -165,6 +165,12 @@ map_saver
 simple_house_map.pgm + simple_house_map.yaml
 ```
 
+| 建圖過程：RViz 中逐步長出來的地圖 | 建圖結果：map_saver 存出來的 simple_house_map.pgm |
+|---|---|
+| ![Cartographer 建圖過程](docs/images/cartographer_mapping_progress.jpg) | ![map_saver 保存的地圖](docs/images/simple_house_map.png) |
+
+左圖邊緣呈放射狀的區域，是雷射掃過但車子還沒走近的地方。右圖白色是空地、黑色是障礙物、灰色是未知。
+
 Gazebo 差速驅動 Plugin 偶爾會發出兩筆 timestamp 相同的 `/odom`，Cartographer 要求時間嚴格遞增，遇到重複就會當掉。
 
 `odom_timestamp_filter_node` 把 timestamp 重複或倒退的 `/odom` 丟掉，再交給 Cartographer。
