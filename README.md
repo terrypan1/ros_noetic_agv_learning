@@ -22,9 +22,11 @@ Gazebo 小車與 Sensor，理解移動機器人系統中的實際資料流與控
 |---|---|
 | ![Gazebo simple_robot](docs/images/gazebo_simple_robot.jpg) | ![RViz RobotModel](docs/images/rviz_robot_model.jpg) |
 
-Cartographer 在自製小屋建出來的地圖（RViz 俯視，紅點是當下的 LaserScan）：
+| Gazebo：自己建立的小屋場景 simple_house | RViz：Cartographer 建出來的地圖 |
+|---|---|
+| ![Gazebo simple_house](docs/images/gazebo_simple_house.jpg) | ![Cartographer 建圖結果](docs/images/cartographer_house_map.jpg) |
 
-<img src="docs/images/cartographer_house_map.jpg" alt="Cartographer 建圖結果" width="640">
+右圖是 RViz 俯視，紅點是當下的 LaserScan。
 
 ---
 
@@ -119,6 +121,8 @@ nav_msgs/OccupancyGrid
 RViz Map
 ```
 
+![OccupancyGrid 訊息結構](docs/images/occupancy_grid_message.jpg)
+
 ### TF 與 Odometry
 
 ```text
@@ -132,6 +136,12 @@ laser_link
 ```
 
 每一段 TF 只能有一個發布者。`odom -> base_link` 已經由 Gazebo 發布，所以 Cartographer 只發布 `map -> odom`。
+
+![TF Tree 與各 Frame 說明](docs/images/tf_tree_frames.jpg)
+
+上圖是通用的 TF Tree 說明，`simple_robot` 沒有 `base_footprint` 這一層。
+
+![Odom 里程計原理](docs/images/odom_principle.jpg)
 
 ### Cartographer 2D SLAM
 
