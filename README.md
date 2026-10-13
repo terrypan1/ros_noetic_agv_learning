@@ -8,17 +8,23 @@ Gazebo 小車與 Sensor，理解移動機器人系統中的實際資料流與控
 
 目前已完成：
 
-- 自己撰寫的 ROS C++ Node（Publisher / Subscriber、`/cmd_vel` 控制、LiDAR 避障、IMU 姿態解析）
+- 自己撰寫的 ROS C++ Node（Publisher / Subscriber、`/cmd_vel` 控制、LiDAR 避障、IMU 姿態解析、自訂 `/map` 發布、Odom timestamp 過濾）
 - 自己用 URDF 建立的 Gazebo 差速小車 `simple_robot`
 - 自己在小車上加入 LiDAR（`/scan`）與 IMU（`/imu/data`）Sensor
+- 自己建立的 Gazebo 多房間小屋場景 `simple_house.world`
+- 用 Cartographer 2D SLAM 在小屋裡開車建圖，並用 `map_saver` 存成 `.pgm` + `.yaml`
 
-後續會延伸到 TF、Odometry、Cartographer 與 Navigation。
+後續會延伸到 Localization 與 Navigation。
 
 ## 畫面預覽
 
 | Gazebo：自己建立的 simple_robot | RViz：RobotModel 與 TF |
 |---|---|
 | ![Gazebo simple_robot](docs/images/gazebo_simple_robot.jpg) | ![RViz RobotModel](docs/images/rviz_robot_model.jpg) |
+
+Cartographer 在自製小屋建出來的地圖（RViz 俯視，紅點是當下的 LaserScan）：
+
+<img src="docs/images/cartographer_house_map.jpg" alt="Cartographer 建圖結果" width="640">
 
 ---
 
@@ -37,9 +43,11 @@ Gazebo 小車與 Sensor，理解移動機器人系統中的實際資料流與控
 - [x] IMU / sensor_msgs/Imu
 - [x] Quaternion → Roll / Pitch / Yaw
 - [x] OccupancyGrid 柵格地圖 / 自訂 /map 發布
-- [ ] TF / Frame
-- [ ] Odometry
-- [ ] Cartographer
+- [x] TF / Frame
+- [x] Odometry
+- [x] SLAM 原理
+- [x] Cartographer 2D SLAM 建圖
+- [x] map_server / map_saver 地圖保存與載入
 - [ ] Localization
 - [ ] Navigation
 
@@ -111,6 +119,46 @@ nav_msgs/OccupancyGrid
 RViz Map
 ```
 
+### TF 與 Odometry
+
+```text
+map
+↓  Cartographer
+odom
+↓  Gazebo Diff Drive Plugin（同時發布 /odom）
+base_link
+↓  URDF + robot_state_publisher
+laser_link
+```
+
+每一段 TF 只能有一個發布者。`odom -> base_link` 已經由 Gazebo 發布，所以 Cartographer 只發布 `map -> odom`。
+
+### Cartographer 2D SLAM
+
+```text
+Gazebo Diff Drive Plugin
+↓
+/odom
+↓
+odom_timestamp_filter_node
+↓
+/odom_filtered
+
+/scan + /odom_filtered + TF
+↓
+Cartographer
+↓
+/map
+↓
+map_saver
+↓
+simple_house_map.pgm + simple_house_map.yaml
+```
+
+Gazebo 差速驅動 Plugin 偶爾會發出兩筆 timestamp 相同的 `/odom`，Cartographer 要求時間嚴格遞增，遇到重複就會當掉。
+
+`odom_timestamp_filter_node` 把 timestamp 重複或倒退的 `/odom` 丟掉，再交給 Cartographer。
+
 ---
 
 ## 專案結構
@@ -118,7 +166,9 @@ RViz Map
 ```text
 ros_noetic_robot_learning/
 ├── ros_learning_pkg/
-│   ├── launch/      # 啟動 Gazebo 與 ROS Node
+│   ├── config/      # Cartographer 設定檔
+│   ├── launch/      # 啟動 Gazebo、Cartographer 與 ROS Node
+│   ├── maps/        # map_saver 保存的地圖
 │   ├── src/         # C++ Node
 │   ├── urdf/        # simple_robot 與 Sensor 定義
 │   ├── worlds/      # Gazebo 測試場景
@@ -141,6 +191,8 @@ Gazebo Classic 11
 RViz
 C++
 Catkin
+Cartographer（source build，獨立 workspace）
+map_server
 ```
 
 Workspace：
@@ -150,6 +202,8 @@ Workspace：
 ```
 
 將 `ros_learning_pkg` 放到 `~/ros_learning_ws/src/` 底下即可編譯。
+
+Cartographer 的安裝方式見第 14 章筆記。
 
 ---
 
@@ -193,6 +247,38 @@ rostopic echo /imu/data
 rosrun ros_learning_pkg imu_subscriber_node
 ```
 
+### Cartographer 建圖
+
+各開一個 Terminal，依序啟動：
+
+```bash
+roslaunch ros_learning_pkg gazebo_house.launch
+rosrun ros_learning_pkg odom_timestamp_filter_node
+roslaunch ros_learning_pkg cartographer_2d.launch
+rviz
+rosrun rqt_robot_steering rqt_robot_steering
+```
+
+RViz 的 Fixed Frame 設成 `map`，加入 `Map`（`/map`）、`LaserScan`（`/scan`）、`RobotModel`、`TF`。
+
+開車建議線速度 0.2～0.3 m/s、轉向 0.3～0.5 rad/s。
+
+### 保存地圖
+
+Cartographer 還在執行時：
+
+```bash
+cd ~/ros_learning_ws/src/ros_learning_pkg/maps
+rosrun map_server map_saver -f simple_house_map
+```
+
+### 載入保存的地圖
+
+```bash
+cd ~/ros_learning_ws/src/ros_learning_pkg/maps
+rosrun map_server map_server simple_house_map.yaml
+```
+
 ---
 
 ## 學習筆記
@@ -225,3 +311,7 @@ Gazebo / RViz 驗證
 | 08 | LiDAR LaserScan 資料取得與基礎避障 |
 | 09 | IMU 資料取得與 Quaternion 姿態解析 |
 | 10 | OccupancyGrid 柵格地圖訊息結構與自訂地圖發布 |
+| 11 | TF Frame 座標系與座標轉換 |
+| 12 | Odometry 里程計訊息結構與 odom 座標系 |
+| 13 | SLAM 原理：建圖、定位與資料流概念 |
+| 14 | Cartographer 2D SLAM：TF、Odom 與 map_server 整合 |
