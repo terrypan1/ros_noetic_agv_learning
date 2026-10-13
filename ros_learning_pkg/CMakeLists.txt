@@ -183,6 +183,13 @@ target_link_libraries(map_publisher_node
   ${catkin_LIBRARIES}
 )
 
+## 14 Odom Timestamp Filter：訂閱 /odom，丟掉 timestamp 重複或倒退的訊息，發布 /odom_filtered
+add_executable(odom_timestamp_filter_node src/odom_timestamp_filter_node.cpp)
+
+target_link_libraries(odom_timestamp_filter_node
+  ${catkin_LIBRARIES}
+)
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/ros_learning_pkg.cpp

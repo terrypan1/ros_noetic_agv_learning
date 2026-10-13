@@ -237,14 +237,44 @@
   </joint>
 
   <!-- 輔助輪摩擦設為 0：只負責支撐，在地上滑動，不影響差速驅動轉向 -->
+  <!-- 接觸參數（kp / kd / minDepth / maxVel）：四個接地點（兩顆輔助輪 + 兩顆驅動輪）必須設成一樣 -->
+  <!-- 沒設時車子靜止也會在地上慢慢滑（約 1 mm/s），/odom 會跟著漂 -->
+  <!-- 只設驅動輪、不設輔助輪，四個接地點軟硬不一致，驅動輪會抓不住地，車子開不直 -->
   <gazebo reference="front_caster_link">
     <mu1>0.0</mu1>
     <mu2>0.0</mu2>
+    <!-- kp：接觸剛性，地面有多「硬」 -->
+    <kp>1000000.0</kp>
+    <!-- kd：接觸阻尼，吸收接觸時的抖動 -->
+    <kd>100.0</kd>
+    <!-- minDepth：陷入地面超過這個深度（m）才開始往回推，避免在地面上反覆彈跳 -->
+    <minDepth>0.001</minDepth>
+    <!-- maxVel：把陷入的物體推出來的最大速度（m/s），限制住才不會被彈開 -->
+    <maxVel>0.1</maxVel>
   </gazebo>
 
   <gazebo reference="rear_caster_link">
     <mu1>0.0</mu1>
     <mu2>0.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+  </gazebo>
+
+  <!-- 驅動輪接觸參數：數值與輔助輪相同，摩擦維持預設值，讓驅動輪負責抓地 -->
+  <gazebo reference="left_wheel_link">
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+  </gazebo>
+
+  <gazebo reference="right_wheel_link">
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
   </gazebo>
 
   <!-- Gazebo 差速驅動 Plugin：接收 /cmd_vel，控制左右輪 -->
